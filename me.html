@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flowchart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="flowchart">
+        <h2 id="question">Was it the employee’s purpose to cause harm?</h2>
+        
+        <div class="buttons">
+            <button onclick="nextStep('yes')">Yes</button>
+            <button onclick="nextStep('no')">No</button>
+        </div>
+
+        <div id="result" class="hidden">
+            <h3>Your Final Decision:</h3>
+            <p id="finalDecision"></p>
+            
+            <h3>Your Opinion:</h3>
+            <textarea id="opinionBox" rows="4" cols="50" placeholder="Write your thoughts here..."></textarea>
+            <br>
+            <button onclick="saveAnswer()">Save Answer</button>
+        </div>
+    </div>
+
+    <script>
+        // Decision tree structure
+        const flowchart = {
+            "start": {
+                "question": "Was it the employee’s purpose to cause harm?",
+                "yes": "disciplinary",
+                "no": "knowingly"
+            },
+            "knowingly": {
+                "question": "Did the employee knowingly cause harm?",
+                "yes": "justified",
+                "no": "substantialRisk"
+            },
+            "justified": {
+                "question": "Was the harm justified as the lesser of two evils?",
+                "yes": "support",
+                "no": "disciplinary"
+            },
+            "substantialRisk": {
+                "question": "Did the behavior represent a substantial and unjustifiable risk?",
+                "yes": "consciousRisk",
+                "no": "ignore"
+            },
+            "consciousRisk": {
+                "question": "Did the employee consciously disregard this substantial and unjustifiable risk?",
+                "yes": "disciplinary",
+                "no": "atRisk"
+            },
+            "atRisk": {
+                "question": "Did the employee choose the behavior?",
+                "yes": "coach",
+                "no": "error"
+            },
+            "disciplinary": "Consider disciplinary action.",
+            "support": "Support employee in decision.",
+            "ignore": "Do not consider employee action.",
+            "coach": "Coach employee.",
+            "error": "Accept the error."
+        };
+
+        let currentStep = "start";
+        function nextStep(choice) {
+            const next = flowchart[currentStep][choice];
+            
+            if (typeof flowchart[next] === "string") {
+                document.getElementById("question").classList.add("hidden");
+                document.querySelector(".buttons").classList.add("hidden");
+                document.getElementById("result").classList.remove("hidden");
+                document.getElementById("finalDecision").innerText = flowchart[next];
+            } else {
+                currentStep = next;
+                document.getElementById("question").innerText = flowchart[currentStep].question;
+            }
+        }
+
+        function saveAnswer() {
+            const answer = document.getElementById("finalDecision").innerText;
+            const opinion = document.getElementById("opinionBox").value;
+            localStorage.setItem("savedDecision", answer);
+            localStorage.setItem("userOpinion", opinion);
+            alert("Decision and opinion saved!");
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .flowchart {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+        }
+        .buttons button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+        textarea {
+            width: 90%;
+            margin-top: 10px;
+        }
+    </style>
+</body>
+</html>
